@@ -76,3 +76,68 @@ INSERT INTO `t_user_role` (`id`, `username`, `role`, `create_time`) VALUES (2, '
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- ----------------------------
+    -- Table structure for projects
+-- ---
+DROP TABLE IF EXISTS `projects`;
+
+CREATE TABLE projects (
+                          project_id VARCHAR(36) NOT NULL DEFAULT (UUID()) COMMENT '项目ID',
+                          project_name VARCHAR(255) NOT NULL COMMENT '项目名称',
+                          owner_id VARCHAR(36) COMMENT '负责人ID',
+                          status ENUM('planning', 'in_progress', 'paused', 'completed', 'archived')
+       NOT NULL DEFAULT 'planning' COMMENT '状态',
+                          priority TINYINT UNSIGNED NOT NULL DEFAULT 3
+       COMMENT '优先级(1-紧急 2-高 3-中 4-低)',
+                          description TEXT COMMENT '项目描述',
+                          start_time TIMESTAMP NULL COMMENT '计划开始时间',
+                          end_time TIMESTAMP NULL COMMENT '计划截止时间',
+                          completion_time TIMESTAMP NULL COMMENT '实际完成时间',
+                          version INT UNSIGNED NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
+                          is_deleted TINYINT(1) NOT NULL DEFAULT 0 COMMENT '软删除标记',
+                          create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          update_time TIMESTAMP NOT NULL
+                                                          DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+                          PRIMARY KEY (project_id),
+                          INDEX idx_status_priority (status, priority),
+                          INDEX idx_owner (owner_id),
+                          INDEX idx_time_range (start_time, end_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='项目主表';
+
+-- ---
+-- Table structure for tasks
+-- ---
+DROP TABLE IF EXISTS `tasks`;
+CREATE TABLE tasks (
+                       task_id VARCHAR(36) NOT NULL DEFAULT (UUID()) COMMENT '任务ID',
+                       task_name VARCHAR(255) NOT NULL COMMENT '任务名称',
+                       project_id VARCHAR(36) COMMENT '关联项目ID',
+                       owner_id VARCHAR(36) COMMENT '负责人ID',
+                       status ENUM('backlog', 'todo', 'in_progress', 'review', 'completed')
+       NOT NULL DEFAULT 'backlog' COMMENT '状态',
+                       priority TINYINT UNSIGNED NOT NULL DEFAULT 3
+       COMMENT '优先级(1-紧急 2-高 3-中 4-低)',
+                       tag_ids JSON COMMENT '标签ID集合',
+                       pre_task_id VARCHAR(36) COMMENT '前置任务ID',
+                       estimate_hours DECIMAL(5,1) UNSIGNED COMMENT '预计工时(小时)',
+                       start_time TIMESTAMP NULL COMMENT '计划开始时间',
+                       end_time TIMESTAMP NULL COMMENT '计划截止时间',
+                       completion_time TIMESTAMP NULL COMMENT '实际完成时间',
+                       version INT UNSIGNED NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
+                       is_deleted TINYINT(1) NOT NULL DEFAULT 0 COMMENT '软删除标记',
+                       create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                       update_time TIMESTAMP NOT NULL
+                           DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+                       PRIMARY KEY (task_id),
+                       FOREIGN KEY (project_id)
+                           REFERENCES projects(project_id)
+                           ON UPDATE CASCADE ON DELETE SET NULL,
+                       INDEX idx_project_due (project_id, end_time),
+                       INDEX idx_status_due (status, end_time),
+                       INDEX idx_owner_priority (owner_id, priority),
+                       INDEX idx_pre_task (pre_task_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='原子任务表';
