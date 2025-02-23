@@ -1,26 +1,28 @@
-package per.stu.pms.common.domain.dos;
+package per.stu.pms.admin.model.vo.project;
 
-import com.baomidou.mybatisplus.annotation.*;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import per.stu.pms.common.enums.ProjectStatus;;
+import per.stu.pms.common.enums.ProjectStatus;
+
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("projects")
-public class ProjectDO {
-
-    @TableId(type = IdType.ASSIGN_UUID)
+public class FindProjectPageListResVO {
     private String projectId;
 
     private String projectName;
     private String ownerId;
-    private ProjectStatus status; // 使用枚举类型
+    private ProjectStatus status;
     private Integer priority;
     private String description;
     private Date startTime;
@@ -28,10 +30,6 @@ public class ProjectDO {
     private Date completionTime;
     private Integer version;
     private Boolean isDeleted;
-
-    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
-
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 }

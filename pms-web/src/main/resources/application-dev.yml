@@ -32,3 +32,5 @@ mybatis-plus:
       logic-not-delete-value: 0     # 未删除标记值
   configuration:
     optimistic-locker: true         # 启用乐观锁
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: org.apache.ibatis.type.EnumTypeHandler

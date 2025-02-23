@@ -1,8 +1,5 @@
-package per.stu.pms.common.domain.dos;
+package per.stu.pms.admin.model.vo.task;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,21 +8,12 @@ import per.stu.pms.common.enums.TaskStatus;
 
 import java.util.Date;
 
-/**
- * @description: 任务表实体类
- * @author: syl
- * @create: 2024-12-20 17:39
- **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("tasks")
-public class TaskDO {
-
-    @TableId(type = IdType.ASSIGN_UUID) // 使用 UUID 作为主键
+public class FindTaskPageListResVO {
     private String taskId;
-
     private String taskName; // 任务名称
     private String projectId; // 关联项目ID
     private String ownerId; // 负责人ID

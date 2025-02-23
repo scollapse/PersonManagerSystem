@@ -1,4 +1,18 @@
 package per.stu.pms.admin.service;
 
+import per.stu.pms.admin.model.vo.task.AddTaskRequestVO;
+import per.stu.pms.admin.model.vo.task.DeleteTaskReqVO;
+import per.stu.pms.admin.model.vo.task.FindTaskPageListReqVO;
+import per.stu.pms.admin.model.vo.task.FindTaskReqVO;
+import per.stu.pms.common.utils.PageResponse;
+import per.stu.pms.common.utils.Response;
+
 public interface AdminTaskService {
+    Response addTask(AddTaskRequestVO addTaskRequestVO);
+
+    PageResponse findTaskList(FindTaskPageListReqVO findTaskPageListReqVO);
+
+    Response deleteTask(DeleteTaskReqVO deleteTaskReqVO);
+
+    Response searchTaskList(FindTaskReqVO findTaskReqVO);
 }

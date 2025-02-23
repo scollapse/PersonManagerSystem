@@ -3,6 +3,7 @@ package per.stu.pms.common.domain.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 import per.stu.pms.common.domain.dos.UserRoleDO;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author: syl
  * @create: 2024-12-24 14:42
  **/
+@Mapper
 public interface UserRoleMapper extends BaseMapper<UserRoleDO> {
     /**
      * 根据用户名查询

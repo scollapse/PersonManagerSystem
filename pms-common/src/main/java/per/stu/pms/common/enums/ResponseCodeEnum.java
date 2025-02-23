@@ -58,7 +58,11 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
 
     FILE_UPLOAD_FAILED( "20016", "文件上传失败"),
     CATEGORY_NOT_EXISTED( "20017", "分类不存在"),
-    ARTICLE_NOT_FOUND( "20018", "文章不存在"),;
+    ARTICLE_NOT_FOUND( "20018", "文章不存在"),
+    PROJECT_NAME_EXIST("20019","项目名称已存在,请勿重复创建" ),
+    PROJECT_ADD_ERROR("20020","项目添加失败" ),
+    TASK_NAME_EXIST("20021","任务名称已存在,请勿重复创建" ),
+    TASK_ADD_ERROR("20022","任务添加失败" );
 
     private String errorCode;
 
