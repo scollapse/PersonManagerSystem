@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import per.stu.pms.common.constants.TableConstants;
 import per.stu.pms.common.enums.TaskStatus;
 
 import java.util.Date;
@@ -20,7 +21,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("tasks")
+@TableName(TableConstants.TABLE_TASK)
 public class TaskDO {
 
     @TableId(type = IdType.ASSIGN_UUID) // 使用 UUID 作为主键

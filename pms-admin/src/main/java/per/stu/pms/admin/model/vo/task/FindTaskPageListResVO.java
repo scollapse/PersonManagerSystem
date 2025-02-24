@@ -29,4 +29,6 @@ public class FindTaskPageListResVO {
     private Boolean isDeleted; // 软删除标记
     private Date createTime; // 创建时间
     private Date updateTime; // 更新时间
+    private String projectName; // 联查得到的项目名称
+
 }

@@ -15,4 +15,6 @@ public interface AdminProjectService {
     Response deleteProject(DeleteProjectReqVO deleteProjectReqVO);
 
     Response searchProjectList(FindProjectReqVO findProjectReqVO);
+
+    Response updateProject(AddProjectRequestVO addProjectRequestVO);
 }

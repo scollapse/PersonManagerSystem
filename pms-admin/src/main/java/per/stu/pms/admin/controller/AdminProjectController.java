@@ -28,8 +28,15 @@ public class AdminProjectController {
     @PostMapping("/add")
     @ApiOperation(value = "添加项目")
     @ApiOperationLog(description = "添加项目")
-    public Response addProject(@RequestBody @Validated AddProjectRequestVO AddProjectRequestVO) {
-        return projectService.addProject(AddProjectRequestVO);
+    public Response addProject(@RequestBody @Validated AddProjectRequestVO addProjectRequestVO) {
+        return projectService.addProject(addProjectRequestVO);
+    }
+
+    @PostMapping("/update")
+    @ApiOperation(value = "修改项目")
+    @ApiOperationLog(description = "修改项目")
+    public Response updateProject(@RequestBody @Validated AddProjectRequestVO addProjectRequestVO) {
+        return projectService.updateProject(addProjectRequestVO);
     }
 
     @PostMapping("/list")

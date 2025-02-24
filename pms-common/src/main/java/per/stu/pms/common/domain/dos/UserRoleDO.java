@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Builder;
 import lombok.Data;
+import per.stu.pms.common.constants.TableConstants;
+
 import java.util.Date;
 
 /**
@@ -15,7 +17,7 @@ import java.util.Date;
  **/
 @Data
 @Builder
-@TableName("t_user_role")
+@TableName(TableConstants.TABLE_USER_ROLE)
 public class UserRoleDO {
     @TableId(type = IdType.AUTO)
     private Long id;

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import per.stu.pms.common.constants.TableConstants;
 
 import java.util.Date;
 
@@ -20,7 +21,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("t_user")
+@TableName(TableConstants.TABLE_USER)
 public class UserDO {
 
     @TableId(type = IdType.AUTO)

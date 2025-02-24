@@ -5,13 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import per.stu.pms.admin.convert.ProjectConvert;
 import per.stu.pms.admin.convert.TaskConvert;
-import per.stu.pms.admin.model.vo.project.FindProjectPageListResVO;
 import per.stu.pms.admin.model.vo.task.*;
 import per.stu.pms.admin.service.AdminTaskService;
-import per.stu.pms.common.domain.dos.ProjectDO;
 import per.stu.pms.common.domain.dos.TaskDO;
+import per.stu.pms.common.domain.dtos.task.TaskDTO;
 import per.stu.pms.common.domain.mapper.TaskMapper;
 import per.stu.pms.common.enums.ResponseCodeEnum;
 import per.stu.pms.common.excption.BizException;
@@ -57,13 +55,11 @@ public class AdminTaskServiceImpl implements AdminTaskService {
     @Override
     public PageResponse findTaskList(FindTaskPageListReqVO findTaskPageListReqVO) {
         // 获取分页参数
-        Long  pageNum = findTaskPageListReqVO.getCurrent();
-        Long  pageSize = findTaskPageListReqVO.getSize();
-
-        Page<TaskDO> taskDOPage = taskMapper.finTaskList(pageNum,pageSize);
-        List<TaskDO> records = taskDOPage.getRecords();
+        Page<TaskDTO> page = new Page<>(findTaskPageListReqVO.getCurrent(), findTaskPageListReqVO.getSize());
+        Page<TaskDTO> taskDOPage = taskMapper.findTaskList(page);
+        List<TaskDTO> records = taskDOPage.getRecords();
         //DO转VO
-        List<FindTaskPageListResVO> vos = TaskConvert.INSTANCE.convertDOToVOList(records);
+        List<FindTaskPageListResVO> vos = TaskConvert.INSTANCE.convertDTOToVOList(records);
         return PageResponse.success(taskDOPage,vos);
     }
 

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import per.stu.pms.common.constants.TableConstants;
 import per.stu.pms.common.enums.ProjectStatus;;
 import java.util.Date;
 
@@ -12,7 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("projects")
+@TableName(TableConstants.TABLE_PROJECT)
 public class ProjectDO {
 
     @TableId(type = IdType.ASSIGN_UUID)

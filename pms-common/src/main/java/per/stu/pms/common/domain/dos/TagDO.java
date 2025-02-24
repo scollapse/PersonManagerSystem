@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import per.stu.pms.common.constants.TableConstants;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("t_tag")
+@TableName(TableConstants.TABLE_TAG)
 public class TagDO {
     @TableId(type = IdType.AUTO)
     private Long id;

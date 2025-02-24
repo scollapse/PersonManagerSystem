@@ -7,6 +7,7 @@ import org.mapstruct.factory.Mappers;
 import per.stu.pms.admin.model.vo.task.AddTaskRequestVO;
 import per.stu.pms.admin.model.vo.task.FindTaskPageListResVO;
 import per.stu.pms.common.domain.dos.TaskDO;
+import per.stu.pms.common.domain.dtos.task.TaskDTO;
 import per.stu.pms.common.enums.TaskStatus;
 
 import java.time.LocalDateTime;
@@ -51,5 +52,5 @@ public interface TaskConvert {
             : null;
     }
 
-    List<FindTaskPageListResVO> convertDOToVOList(List<TaskDO> records);
+    List<FindTaskPageListResVO> convertDTOToVOList(List<TaskDTO> records);
 }

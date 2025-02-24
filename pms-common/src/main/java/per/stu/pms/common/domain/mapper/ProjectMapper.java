@@ -18,8 +18,7 @@ public interface ProjectMapper extends BaseMapper<ProjectDO> {
        return selectOne(new QueryWrapper<ProjectDO>().eq("project_name", projectName));
    }
 
-   default Page<ProjectDO> findProjectList(Long pageNum, Long pageSize){
-       Page<ProjectDO> page = new Page<>(pageNum, pageSize);
+   default Page<ProjectDO> findProjectList(Page<ProjectDO> page){
        return selectPage(page, new QueryWrapper<ProjectDO>());
    }
 }
