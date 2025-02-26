@@ -3,10 +3,10 @@ package per.stu.pms.common.enums;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TaskStatus {
-    backlog("backlog"),         // 待办
+    deprecated("deprecated"),     // 废弃
+    wait("wait"),               // 等待中
     todo("todo"),               // 待处理
     in_progress("in_progress"), // 进行中
-    review("review"),           // 评审中
     completed("completed");     // 已完成
 
     private final String value;

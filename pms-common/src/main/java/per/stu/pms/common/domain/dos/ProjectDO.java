@@ -28,6 +28,8 @@ public class ProjectDO {
     private Date endTime;
     private Date completionTime;
     private Integer version;
+
+    @TableLogic(value = "false", delval = "true") // 关键配置
     private Boolean isDeleted;
 
     @TableField(fill = FieldFill.INSERT)

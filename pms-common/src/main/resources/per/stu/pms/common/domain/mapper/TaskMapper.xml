@@ -50,6 +50,7 @@
         FROM ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK} t
                  LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_PROJECT} p
                            ON t.project_id = p.project_id
+        WHERE t.is_deleted = FALSE
     </select>
 
 </mapper>

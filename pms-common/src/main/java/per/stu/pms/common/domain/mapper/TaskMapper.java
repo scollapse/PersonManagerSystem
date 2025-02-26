@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import per.stu.pms.common.domain.dos.TaskDO;
 import org.apache.ibatis.annotations.Mapper;
 import per.stu.pms.common.domain.dtos.task.TaskDTO;
+import per.stu.pms.common.enums.TaskStatus;
 
 /**
  * @description: 任务表 Mapper 接口
@@ -16,8 +17,13 @@ import per.stu.pms.common.domain.dtos.task.TaskDTO;
 @Mapper
 public interface TaskMapper extends BaseMapper<TaskDO> {
 
-    default TaskDO selectByName(String taskName) {
-        return selectOne(new QueryWrapper<TaskDO>().eq("task_name", taskName));
+    default TaskDO isExistByName(String taskName) {
+        // 根据任务名称查询任务
+        QueryWrapper<TaskDO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("task_name", taskName);
+        queryWrapper.ne("status", TaskStatus.completed);
+        queryWrapper.ne("status", TaskStatus.deprecated);
+        return selectOne(queryWrapper);
     }
 
     // 注意返回类型改为 TaskVO

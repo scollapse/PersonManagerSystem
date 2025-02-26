@@ -1,8 +1,6 @@
 package per.stu.pms.common.domain.dos;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,7 +37,13 @@ public class TaskDO {
     private Date endTime; // 计划截止时间
     private Date completionTime; // 实际完成时间
     private Integer version; // 乐观锁版本号
+
+    @TableLogic(value = "false", delval = "true") // 关键配置
     private Boolean isDeleted; // 软删除标记
-    private Date createTime; // 创建时间
-    private Date updateTime; // 更新时间
+
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
 }

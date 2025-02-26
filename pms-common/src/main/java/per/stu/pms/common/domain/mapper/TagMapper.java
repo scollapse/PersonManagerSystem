@@ -12,13 +12,14 @@ import java.util.Objects;
 
 public interface TagMapper extends BaseMapper<TagDO> {
 
-    default  Page<TagDO> findTagList(Long pageNum, Long pageSize,String name, LocalDate startDate, LocalDate endDate) {
+    default Page<TagDO> findTagList(Long pageNum, Long pageSize, String name, LocalDate startDate, LocalDate endDate) {
         // 分页对象(查询第几页、每页多少数据)
         Page<TagDO> page = new Page<>(pageNum, pageSize);
         // 查询条件
         LambdaQueryWrapper<TagDO> queryWrapper = new LambdaQueryWrapper<>();
+        // 判断名称是否为空
         queryWrapper
-                .like(StringUtils.isNotBlank(name), TagDO::getName, name.trim())
+                .like(StringUtils.isNotBlank(name), TagDO::getName, name != null ? name.trim() : null)
                 .ge(Objects.nonNull(startDate), TagDO::getCreateTime, startDate)
                 .le(Objects.nonNull(endDate), TagDO::getCreateTime, endDate)
                 .orderByDesc(TagDO::getCreateTime);
@@ -26,6 +27,7 @@ public interface TagMapper extends BaseMapper<TagDO> {
         // 执行分页查询
         return selectPage(page, queryWrapper);
     }
+
 
    default List<TagDO> searchTagList(String key){
         LambdaQueryWrapper<TagDO> queryWrapper = new LambdaQueryWrapper<>();

@@ -65,7 +65,10 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
     TASK_ADD_ERROR("20022","任务添加失败" ),
     PROJECT_NOT_EXIST("20023","项目不存在" ),
     PROJECT_UPDATE_ERROR("20024","项目更新失败" ),
-    PROJECT_DELETE_ERROR("20025","项目删除失败" );
+    PROJECT_DELETE_ERROR("20025","项目删除失败" ),
+    TASK_NOT_EXIST("20026","" ),
+    TASK_UPDATE_ERROR("20027","任务更新失败" ),
+    TASK_DELETE_ERROR("20028","任务删除失败" );
 
     private String errorCode;
 

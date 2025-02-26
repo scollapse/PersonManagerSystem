@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import per.stu.pms.admin.model.vo.project.AddProjectRequestVO;
-import per.stu.pms.admin.model.vo.project.DeleteProjectReqVO;
-import per.stu.pms.admin.model.vo.project.FindProjectPageListReqVO;
-import per.stu.pms.admin.model.vo.project.FindProjectReqVO;
+import per.stu.pms.admin.model.vo.project.*;
 import per.stu.pms.admin.service.AdminProjectService;
 import per.stu.pms.common.aspect.ApiOperationLog;
 import per.stu.pms.common.utils.PageResponse;
@@ -35,8 +32,8 @@ public class AdminProjectController {
     @PostMapping("/update")
     @ApiOperation(value = "修改项目")
     @ApiOperationLog(description = "修改项目")
-    public Response updateProject(@RequestBody @Validated AddProjectRequestVO addProjectRequestVO) {
-        return projectService.updateProject(addProjectRequestVO);
+    public Response updateProject(@RequestBody @Validated UpdateProjectRequestVO updateProjectRequestVO) {
+        return projectService.updateProject(updateProjectRequestVO);
     }
 
     @PostMapping("/list")

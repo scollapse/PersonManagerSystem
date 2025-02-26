@@ -10,11 +10,13 @@ import per.stu.pms.admin.model.vo.project.*;
 import per.stu.pms.admin.service.AdminProjectService;
 import per.stu.pms.common.domain.dos.ProjectDO;
 import per.stu.pms.common.domain.mapper.ProjectMapper;
+import per.stu.pms.common.enums.ProjectStatus;
 import per.stu.pms.common.enums.ResponseCodeEnum;
 import per.stu.pms.common.excption.BizException;
 import per.stu.pms.common.utils.PageResponse;
 import per.stu.pms.common.utils.Response;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,14 +29,16 @@ public class AdminProjectServiceImpl implements AdminProjectService {
 
     @Override
     public Response addProject(AddProjectRequestVO addProjectRequestVO) {
-        // 检查项目名称是否存在
-        ProjectDO existProject = projectMapper.selectByName(addProjectRequestVO.getProjectName());
+        // 检查项目名称是否存在 已废弃的除外
+        ProjectDO existProject = projectMapper.isExistByName(addProjectRequestVO.getProjectName());
         if (Objects.nonNull(existProject)) {
             log.warn("项目名称已存在：{}", addProjectRequestVO.getProjectName());
             throw new BizException(ResponseCodeEnum.PROJECT_NAME_EXIST);
         }
         // 转换VO到DO并插入
         ProjectDO projectDO = ProjectConvert.INSTANCE.convertVOToDO(addProjectRequestVO);
+        // 默认设置为待计划状态
+        projectDO.setStatus(ProjectStatus.planning);
         int insert = projectMapper.insert(projectDO);
         if (insert == 0) {
             log.error("项目新增失败：{}", addProjectRequestVO.getProjectName());
@@ -47,7 +51,13 @@ public class AdminProjectServiceImpl implements AdminProjectService {
     public PageResponse findProjectList(FindProjectPageListReqVO reqVO) {
         // 构建分页查询
         Page<ProjectDO> page = new Page<>(reqVO.getCurrent(), reqVO.getSize());
-        Page<ProjectDO> projectPage = projectMapper.findProjectList(page);
+        QueryWrapper<ProjectDO> queryWrapper = new QueryWrapper<>();
+        // 按状态查询
+        if (Objects.nonNull(reqVO.getStatus())) {
+            queryWrapper.eq("status", reqVO.getStatus());
+        }
+        // 按名称模糊查询
+        Page<ProjectDO> projectPage = projectMapper.findProjectList(page, queryWrapper);
         // 转换结果
         List<FindProjectPageListResVO> vos = ProjectConvert.INSTANCE.convertDOToVOList(projectPage.getRecords());
         return PageResponse.success(projectPage, vos);
@@ -55,13 +65,6 @@ public class AdminProjectServiceImpl implements AdminProjectService {
 
     @Override
     public Response deleteProject(DeleteProjectReqVO deleteReqVO) {
-        // 1. 检查项目是否存在
-        ProjectDO project = projectMapper.selectById(deleteReqVO.getProjectId());
-        if (project == null) {
-            log.warn("删除失败，项目不存在：ID={}", deleteReqVO.getProjectId());
-            throw new BizException(ResponseCodeEnum.PROJECT_NOT_EXIST);
-        }
-        // 2. 执行删除
         int deleteCount = projectMapper.deleteById(deleteReqVO.getProjectId());
         if (deleteCount == 0) {
             log.error("项目删除失败：ID={}", deleteReqVO.getProjectId());
@@ -75,25 +78,8 @@ public class AdminProjectServiceImpl implements AdminProjectService {
         return null;
     }
 
-//    @Override
-//    public Response searchProjectList(FindProjectReqVO searchReqVO) {
-//        // 构建动态查询条件
-//        QueryWrapper<ProjectDO> queryWrapper = new QueryWrapper<>();
-//        if (searchReqVO.getProjectName() != null) {
-//            queryWrapper.like("project_name", searchReqVO.getProjectName());
-//        }
-//        if (searchReqVO.getStatus() != null) {
-//            queryWrapper.eq("status", searchReqVO.getStatus());
-//        }
-//        // 执行查询
-//        List<ProjectDO> projects = projectMapper.selectList(queryWrapper);
-//        // 转换结果
-//        List<FindProjectPageListResVO> vos = ProjectConvert.INSTANCE.convertDOToVOList(projects);
-//        return Response.success(vos);
-//    }
-
     @Override
-    public Response updateProject(AddProjectRequestVO updateReqVO) {
+    public Response updateProject(UpdateProjectRequestVO updateReqVO) {
         // 1. 检查项目是否存在
         ProjectDO existProject = projectMapper.selectById(updateReqVO.getProjectId());
         if (existProject == null) {
@@ -102,15 +88,20 @@ public class AdminProjectServiceImpl implements AdminProjectService {
         }
         // 2. 检查名称是否重复（如果名称有修改）
         if (!existProject.getProjectName().equals(updateReqVO.getProjectName())) {
-            ProjectDO sameNameProject = projectMapper.selectByName(updateReqVO.getProjectName());
+            ProjectDO sameNameProject = projectMapper.isExistByName(updateReqVO.getProjectName());
             if (sameNameProject != null) {
                 log.warn("项目名称重复：{}", updateReqVO.getProjectName());
                 throw new BizException(ResponseCodeEnum.PROJECT_NAME_EXIST);
             }
         }
-        // 3. 更新数据
-        ProjectDO updateDO = ProjectConvert.INSTANCE.updateVOToDO(updateReqVO);
-        int updateCount = projectMapper.updateById(updateDO);
+        // 3. 将 VO 中的变更字段拷贝到 existProject（保持原有对象引用）
+        ProjectConvert.INSTANCE.updateVOToDO(updateReqVO, existProject); // 修改点：使用对象引用传递
+        if (ProjectStatus.completed.equals(existProject.getStatus())) {
+            existProject.setCompletionTime(new Date());
+        }
+        // 4. 强制设置更新时间
+        existProject.setUpdateTime(new Date());
+        int updateCount = projectMapper.updateById(existProject);
         if (updateCount == 0) {
             log.error("项目更新失败：ID={}", updateReqVO.getProjectId());
             throw new BizException(ResponseCodeEnum.PROJECT_UPDATE_ERROR);

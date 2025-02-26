@@ -9,9 +9,11 @@ import per.stu.pms.common.model.BasePageQuery;
 
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @ApiModel(value = "查询项目列表 VO")
 public class FindProjectPageListReqVO  extends BasePageQuery {
-
+    private String projectName;
+    private String status;
 }

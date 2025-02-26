@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import per.stu.pms.admin.model.vo.task.AddTaskRequestVO;
-import per.stu.pms.admin.model.vo.task.DeleteTaskReqVO;
-import per.stu.pms.admin.model.vo.task.FindTaskPageListReqVO;
-import per.stu.pms.admin.model.vo.task.FindTaskReqVO;
+import per.stu.pms.admin.model.vo.task.*;
 import per.stu.pms.admin.service.AdminTaskService;
 import per.stu.pms.common.aspect.ApiOperationLog;
 import per.stu.pms.common.utils.PageResponse;
@@ -30,6 +27,13 @@ public class AdminTaskController {
     @ApiOperationLog(description = "添加任务")
     public Response addTask(@RequestBody @Validated AddTaskRequestVO addTaskRequestVO) {
         return taskService.addTask(addTaskRequestVO);
+    }
+
+    @PostMapping("/update")
+    @ApiOperation(value = "更新任务")
+    @ApiOperationLog(description = "更新任务")
+    public Response updateTask(@RequestBody @Validated UpdateTaskRequestVO updateTaskRequestVO) {
+        return taskService.updateTask(updateTaskRequestVO);
     }
 
     @PostMapping("/list")

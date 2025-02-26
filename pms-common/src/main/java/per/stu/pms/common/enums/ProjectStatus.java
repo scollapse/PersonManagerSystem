@@ -3,11 +3,12 @@ package per.stu.pms.common.enums;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ProjectStatus {
+    //'planning','in_progress','paused','completed','deprecated'
     planning("planning"),         // 常量名称与数据库值一致（全小写）
     in_progress("in_progress"),
     paused("paused"),
     completed("completed"),
-    archived("archived");
+    deprecated("deprecated");
 
     private final String value;
 
