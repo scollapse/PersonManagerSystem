@@ -11,7 +11,7 @@
  Target Server Version : 80403 (8.4.3)
  File Encoding         : 65001
 
- Date: 26/02/2025 18:53:45
+ Date: 27/02/2025 18:12:47
 */
 
 SET NAMES utf8mb4;
@@ -125,6 +125,30 @@ CREATE TABLE `t_user_role` (
 BEGIN;
 INSERT INTO `t_user_role` (`id`, `username`, `role`, `create_time`) VALUES (1, 'admin@mail.com', 'ROLE_ADMIN', '2023-07-07 01:21:15');
 INSERT INTO `t_user_role` (`id`, `username`, `role`, `create_time`) VALUES (2, 'test@mail.com', 'ROLE_VISITOR', '2023-07-07 01:23:33');
+COMMIT;
+
+-- ----------------------------
+-- Table structure for task_tag
+-- ----------------------------
+DROP TABLE IF EXISTS `task_tag`;
+CREATE TABLE `task_tag` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `task_id` varchar(36) NOT NULL COMMENT '任务ID',
+  `tag_id` bigint unsigned NOT NULL COMMENT '标签ID',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_deleted` tinyint NOT NULL DEFAULT '0' COMMENT '软删除标记：0-未删除，1-已删除',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_task_tag` (`task_id`,`tag_id`) COMMENT '任务和标签的唯一约束',
+  KEY `tag_id` (`tag_id`),
+  CONSTRAINT `task_tag_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `task_tag_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `t_tag` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='任务-标签关系表';
+
+-- ----------------------------
+-- Records of task_tag
+-- ----------------------------
+BEGIN;
 COMMIT;
 
 -- ----------------------------
