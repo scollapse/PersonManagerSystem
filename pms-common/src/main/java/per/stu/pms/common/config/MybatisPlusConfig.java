@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @create: 2024-12-20 17:38
  **/
 @Configuration
-@MapperScan("per.stu.weblog.common.domain.mapper")
+@MapperScan("per.stu.pms.common.domain.mapper")
 public class MybatisPlusConfig {
 
     /**
