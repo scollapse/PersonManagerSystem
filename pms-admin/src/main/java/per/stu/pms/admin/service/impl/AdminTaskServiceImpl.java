@@ -5,9 +5,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import per.stu.pms.admin.convert.TaskConvert;
+import per.stu.pms.admin.model.vo.tag.AddTagReqVO;
+import per.stu.pms.admin.model.vo.tag.UpdateTagReqVO;
 import per.stu.pms.admin.model.vo.task.*;
+import per.stu.pms.admin.service.AdminTagService;
 import per.stu.pms.admin.service.AdminTaskService;
+import per.stu.pms.admin.service.AdminTaskTagService;
 import per.stu.pms.common.domain.dos.TaskDO;
 import per.stu.pms.common.domain.dtos.task.TaskDTO;
 import per.stu.pms.common.domain.mapper.TaskMapper;
@@ -17,9 +23,7 @@ import per.stu.pms.common.excption.BizException;
 import per.stu.pms.common.utils.PageResponse;
 import per.stu.pms.common.utils.Response;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @description: 任务管理
@@ -33,26 +37,66 @@ public class AdminTaskServiceImpl implements AdminTaskService {
     @Autowired
     private TaskMapper taskMapper;
 
+    @Autowired
+    private AdminTagService tagService;
+
+    @Autowired
+    private AdminTaskTagService taskTagService;
 
     @Override
-    public Response addTask(AddTaskRequestVO addTaskRequestVO) {
-        //从库中查询任务名称是否存在，如果存在，则返回错误信息
-       TaskDO taskDO = taskMapper.isExistByName(addTaskRequestVO.getTaskName());
-        if (Objects.nonNull(taskDO)){
+    @Transactional(rollbackFor = Exception.class) // 事务提升到 Service 层
+    public Response addTaskAndReturnId(AddTaskRequestVO addTaskRequestVO) {
+        // 1. 检查任务名称是否已存在
+        TaskDO taskDO = taskMapper.isExistByName(addTaskRequestVO.getTaskName());
+        if (Objects.nonNull(taskDO)) {
             log.warn("任务名称已存在：{}", addTaskRequestVO.getTaskName());
             throw new BizException(ResponseCodeEnum.TASK_NAME_EXIST);
         }
-        //如果不存在，则插入新任务
-        //构建DO
+
+        // 2. 插入任务
         TaskDO insertTaskDO = TaskConvert.INSTANCE.convertVOToDO(addTaskRequestVO);
-        //设置默认状态
         insertTaskDO.setStatus(TaskStatus.todo);
         int insert = taskMapper.insert(insertTaskDO);
-        if (insert == 0){
+        if (insert == 0) {
             log.error("新增任务失败：{}", addTaskRequestVO.getTaskName());
             throw new BizException(ResponseCodeEnum.TASK_ADD_ERROR);
         }
+
+        // 3. 处理标签
+        List<UpdateTagReqVO> tags = addTaskRequestVO.getTags();
+        if (!CollectionUtils.isEmpty(tags)) {
+            List<Long> tagIds = processTagsAndReturnIds(tags);
+            // 4. 插入任务-标签关联
+            taskTagService.saveTaskTag(insertTaskDO.getTaskId(), tagIds);
+        }
         return Response.success();
+    }
+
+    /**
+     * 处理标签并返回标签ID列表
+     */
+    private List<Long> processTagsAndReturnIds(List<UpdateTagReqVO> tags) {
+        List<Long> tagIds = new ArrayList<>();
+        List<String> tagNames = new ArrayList<>();
+
+        // 遍历标签，区分有ID和无ID的标签
+        tags.forEach(tag -> {
+            if (tag.getId() == null) {
+                tagNames.add(tag.getName());
+            } else {
+                tagIds.add(tag.getId());
+            }
+        });
+
+        // 插入新标签并获取ID
+        if (!CollectionUtils.isEmpty(tagNames)) {
+            AddTagReqVO addTagReqVO = new AddTagReqVO();
+            addTagReqVO.setTagNames(tagNames);
+            List<Long> newTagIds = tagService.saveBatchAndReturnIds(addTagReqVO);
+            tagIds.addAll(newTagIds);
+        }
+
+        return tagIds;
     }
 
 
@@ -87,6 +131,7 @@ public class AdminTaskServiceImpl implements AdminTaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class) // 添加事务管理
     public Response updateTask(UpdateTaskRequestVO updateReqVO) {
         // 1. 检查任务是否存在
         TaskDO existTask = taskMapper.selectById(updateReqVO.getTaskId());
@@ -115,13 +160,21 @@ public class AdminTaskServiceImpl implements AdminTaskService {
         // 5. 强制设置更新时间
         existTask.setUpdateTime(new Date());
 
-        // 6. 执行更新
+        // 6. 执行任务更新
         int updateCount = taskMapper.updateById(existTask);
         if (updateCount == 0) {
             log.error("任务更新失败：ID={}", updateReqVO.getTaskId());
             throw new BizException(ResponseCodeEnum.TASK_UPDATE_ERROR);
         }
 
+        // 7. 处理任务-标签关联
+        List<UpdateTagReqVO> tags = updateReqVO.getTags();
+        if (tags != null) { // 如果传入了标签信息，则更新任务-标签关联
+            List<Long> tagIds = processTagsAndReturnIds(tags); // 处理标签并返回标签ID列表
+            taskTagService.saveTaskTag(updateReqVO.getTaskId(), tagIds); // 更新任务-标签关联
+        }
+
+        log.info("任务更新成功：ID={}", updateReqVO.getTaskId());
         return Response.success();
     }
 }

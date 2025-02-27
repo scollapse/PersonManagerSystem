@@ -64,7 +64,7 @@ public class TestController {
     @ApiOperation(value = "测试业务异常接口", notes = "测试业务异常接口")
     public Response testBizException(@RequestBody @Validated User user ) {
        // 手动抛出异常
-        throw new BizException(ResponseCodeEnum.PRODUCT_NOT_FOUND);
+        throw new BizException(ResponseCodeEnum.TAG_IS_NOT_EXIST);
     }
 
     @PostMapping("/testGlobalException")

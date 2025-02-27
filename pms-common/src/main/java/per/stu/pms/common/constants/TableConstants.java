@@ -15,4 +15,5 @@ public final class TableConstants {
     // 用户角色关联表
     public static final String TABLE_USER_ROLE = "t_user_role";
 
+    public static final String TABLE_TASK_TAG = "task_tag";
 }

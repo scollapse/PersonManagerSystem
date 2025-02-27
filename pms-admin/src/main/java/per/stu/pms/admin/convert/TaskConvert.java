@@ -25,6 +25,7 @@ public interface TaskConvert {
 
     TaskConvert INSTANCE = Mappers.getMapper(TaskConvert.class);
 
+    //如果目标对象没有某个字段，MapStruct 会自动忽略源对象中的该字段，不需要显式配置。
     @Mapping(target = "projectId", source = "projectId", qualifiedByName = "mapProjectId")
     @Mapping(target = "startTime", source = "startTime", qualifiedByName = "mapLocalDateTime")
     @Mapping(target = "endTime", source = "endTime", qualifiedByName = "mapLocalDateTime")

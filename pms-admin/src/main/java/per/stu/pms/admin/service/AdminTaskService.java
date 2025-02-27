@@ -5,7 +5,7 @@ import per.stu.pms.common.utils.PageResponse;
 import per.stu.pms.common.utils.Response;
 
 public interface AdminTaskService {
-    Response addTask(AddTaskRequestVO addTaskRequestVO);
+    Response addTaskAndReturnId(AddTaskRequestVO addTaskRequestVO);
 
     PageResponse findTaskList(FindTaskPageListReqVO findTaskPageListReqVO);
 

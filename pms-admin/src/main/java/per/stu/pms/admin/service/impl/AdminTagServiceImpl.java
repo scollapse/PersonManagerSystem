@@ -7,10 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import per.stu.pms.admin.model.vo.tag.*;
+import per.stu.pms.admin.model.vo.task.UpdateTaskRequestVO;
 import per.stu.pms.admin.service.AdminTagService;
 import per.stu.pms.common.domain.dos.TagDO;
 import per.stu.pms.common.domain.mapper.TagMapper;
 import per.stu.pms.common.enums.ResponseCodeEnum;
+import per.stu.pms.common.excption.BizException;
 import per.stu.pms.common.model.vo.SelectResVO;
 import per.stu.pms.common.utils.PageResponse;
 import per.stu.pms.common.utils.Response;
@@ -40,6 +42,29 @@ public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implement
             log.warn("add tag list error, {}", e.getMessage());
         }
         return Response.success();
+    }
+
+
+    /**
+     * 批量插入并返回 ID 列表
+     *
+     * @param addTagReqVO
+     * @return
+     */
+    public List<Long> saveBatchAndReturnIds(AddTagReqVO addTagReqVO) {
+            // vo 转 do
+            List<TagDO> collect = addTagReqVO.getTagNames().stream().map(tagName ->
+                    TagDO.builder().name(tagName).createTime(LocalDateTime.now()).updateTime(LocalDateTime.now()).isDeleted(false).build()
+            ).collect(Collectors.toList());
+            // 批量插入
+            boolean isSuccess = saveBatch(collect);
+            if (isSuccess) {
+                // 提取插入后的 ID 列表
+                return collect.stream()
+                        .map(TagDO::getId)
+                        .collect(Collectors.toList());
+            }
+            throw new BizException(ResponseCodeEnum.TAG_ADD_ERROR);
     }
 
     @Override

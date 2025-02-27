@@ -8,12 +8,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import per.stu.pms.admin.model.vo.tag.UpdateTagReqVO;
 import per.stu.pms.common.enums.ProjectStatus;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -43,5 +47,7 @@ public class AddTaskRequestVO {
     private String preTaskId; // 前置任务ID
 
     private Double estimateHours; // 预计工时
+
+   private List<UpdateTagReqVO> tags; // 标签集合
 
 }
