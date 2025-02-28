@@ -6,4 +6,5 @@ import per.stu.pms.common.domain.dos.TaskTagDO;
 
 @Mapper
 public interface TaskTagMapper extends BaseMapper<TaskTagDO> {
+    void deleteByTaskIdPhysically(String taskId);
 }

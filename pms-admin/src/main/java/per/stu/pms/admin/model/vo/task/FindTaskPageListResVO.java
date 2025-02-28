@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import per.stu.pms.admin.model.vo.tag.FindTagPageListResVO;
 import per.stu.pms.common.enums.TaskStatus;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,5 +34,5 @@ public class FindTaskPageListResVO {
     private LocalDateTime createTime; // 创建时间
     private LocalDateTime updateTime; // 更新时间
     private String projectName; // 联查得到的项目名称
-
+    private List<FindTagPageListResVO> tags; // 联查得到的标签列表
 }

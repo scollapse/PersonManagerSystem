@@ -38,18 +38,32 @@
         <result property="isDeleted" column="is_deleted"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
-        <!-- 新增 projectName -->
         <result property="projectName" column="project_name"/>
+
+        <!-- 新增标签集合映射 -->
+        <collection property="tags" ofType="per.stu.pms.common.domain.dos.TagDO">
+            <id property="id" column="tag_id"/>
+            <result property="name" column="tag_name"/>
+            <result property="createTime" column="tag_create_time"/>
+            <result property="updateTime" column="tag_update_time"/>
+            <result property="isDeleted" column="tag_is_deleted"/>
+        </collection>
     </resultMap>
 
 
     <select id="findTaskList" resultMap="TaskVOResultMap">
         SELECT
             t.*,
-            IFNULL(p.project_name, '无') AS project_name
+            IFNULL(p.project_name, '无') AS project_name,
+            tt.id AS tag_id,
+            tt.name AS tag_name
         FROM ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK} t
                  LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_PROJECT} p
                            ON t.project_id = p.project_id
+                 LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK_TAG} ttag
+                           ON t.task_id = ttag.task_id AND ttag.is_deleted = FALSE
+                 LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TAG} tt
+                           ON ttag.tag_id = tt.id AND tt.is_deleted = FALSE
         WHERE t.is_deleted = FALSE
     </select>
 

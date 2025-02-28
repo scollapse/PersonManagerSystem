@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="per.stu.pms.common.domain.mapper.TaskTagMapper">
+
+    <!-- 物理删除任务-标签关联 -->
+    <delete id="deleteByTaskIdPhysically">
+        DELETE FROM task_tag
+        WHERE task_id = #{taskId}
+    </delete>
+
+</mapper>

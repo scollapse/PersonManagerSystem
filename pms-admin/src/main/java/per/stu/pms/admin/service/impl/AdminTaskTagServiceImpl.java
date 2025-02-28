@@ -37,10 +37,8 @@ public class AdminTaskTagServiceImpl extends ServiceImpl<TaskTagMapper,TaskTagDO
             throw new BizException(ResponseCodeEnum.PARAM_ERROR);
         }
 
-        // 1. 删除原有关联
-        LambdaQueryWrapper<TaskTagDO> deleteWrapper = new LambdaQueryWrapper<>();
-        deleteWrapper.eq(TaskTagDO::getTaskId, taskId);
-        taskTagMapper.delete(deleteWrapper);
+        // 1. 物理删除旧关联
+        taskTagMapper.deleteByTaskIdPhysically(taskId);
 
         // 2. 批量新增关联
         List<TaskTagDO> taskTagList = tagIds.stream()

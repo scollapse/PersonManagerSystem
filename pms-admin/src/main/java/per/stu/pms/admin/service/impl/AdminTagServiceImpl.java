@@ -86,7 +86,6 @@ public class AdminTagServiceImpl extends ServiceImpl<TagMapper, TagDO> implement
                     FindTagPageListResVO.builder()
                             .id(record.getId())
                             .name(record.getName())
-                            .createTime(record.getCreateTime())
                             .build()
             ).collect(Collectors.toList());
         }

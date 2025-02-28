@@ -2,6 +2,7 @@ package per.stu.pms.admin.service.impl;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ import java.util.*;
  **/
 @Service
 @Slf4j
-public class AdminTaskServiceImpl implements AdminTaskService {
+public class AdminTaskServiceImpl extends ServiceImpl<TaskMapper, TaskDO> implements AdminTaskService {
 
     @Autowired
     private TaskMapper taskMapper;
