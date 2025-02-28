@@ -57,4 +57,11 @@ public class AdminTaskController {
     public Response searchTaskList(@RequestBody @Validated FindTaskReqVO findTaskReqVO) {
         return taskService.searchTaskList(findTaskReqVO);
     }
+
+    @PostMapping("/static")
+    @ApiOperation(value = "任务统计")
+    @ApiOperationLog(description = "任务统计")
+    public Response staticTask() {
+        return taskService.staticTask();
+    }
 }

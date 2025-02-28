@@ -21,7 +21,7 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
     <!-- 定义 TaskVO 的 resultMap -->
-    <resultMap id="TaskVOResultMap" type="per.stu.pms.common.domain.dtos.task.TaskDTO">
+    <resultMap id="TaskDTOResultMap" type="per.stu.pms.common.domain.dtos.task.TaskDTO">
         <id property="taskId" column="task_id"/>
         <result property="taskName" column="task_name"/>
         <result property="projectId" column="project_id"/>
@@ -51,7 +51,7 @@
     </resultMap>
 
 
-    <select id="findTaskList" resultMap="TaskVOResultMap">
+    <select id="findTaskList" resultMap="TaskDTOResultMap">
         SELECT
             t.*,
             IFNULL(p.project_name, '无') AS project_name,
@@ -65,6 +65,26 @@
                  LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TAG} tt
                            ON ttag.tag_id = tt.id AND tt.is_deleted = FALSE
         WHERE t.is_deleted = FALSE
+    </select>
+
+    <select id="selectTaskStatistics"  resultType="per.stu.pms.common.domain.dtos.task.StaticTaskDTO">
+        SELECT
+            COUNT(*) AS total,
+            SUM(CASE WHEN status IN ('wait', 'todo', 'in_progress') THEN 1 ELSE 0 END) AS unfinished,
+            SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS finished,
+            (
+                SELECT GROUP_CONCAT(day_count ORDER BY date ASC SEPARATOR ',')
+                FROM (
+                         SELECT DATE(create_time) AS date, COUNT(*) AS day_count
+                FROM tasks
+                WHERE create_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                  AND is_deleted = 0
+                GROUP BY DATE(create_time)
+                ORDER BY date
+                    ) AS trend_data
+                    ) AS trendData
+        FROM tasks
+        WHERE is_deleted = 0
     </select>
 
 </mapper>

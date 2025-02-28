@@ -5,10 +5,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+import org.springframework.util.StringUtils;
 import per.stu.pms.admin.model.vo.task.AddTaskRequestVO;
 import per.stu.pms.admin.model.vo.task.FindTaskPageListResVO;
+import per.stu.pms.admin.model.vo.task.StaticTaskVO;
 import per.stu.pms.admin.model.vo.task.UpdateTaskRequestVO;
 import per.stu.pms.common.domain.dos.TaskDO;
+import per.stu.pms.common.domain.dtos.task.StaticTaskDTO;
 import per.stu.pms.common.domain.dtos.task.TaskDTO;
 import per.stu.pms.common.enums.TaskStatus;
 
@@ -52,6 +55,14 @@ public interface TaskConvert {
 
     List<FindTaskPageListResVO> convertDTOToVOList(List<TaskDTO> records);
 
+
+    @Mapping(target = "total", source = "total")
+    @Mapping(target = "unfinished", source = "unfinished")
+    @Mapping(target = "finished", source = "finished")
+    @Mapping(target = "trendData", source = "trendData",qualifiedByName = "convertTrendData")
+    StaticTaskVO convertDTOToStatisticVO(StaticTaskDTO staticTaskDTO);
+
+
     // 自定义转换方法
     @Named("mapProjectId")
     default String mapProjectId(String projectId) {
@@ -67,4 +78,19 @@ public interface TaskConvert {
     default Integer mapPriority(String priority) {
         return (priority == null || priority.isEmpty()) ? 2 : Integer.parseInt(priority);
     }
+
+    @Named("convertTrendData")
+    default List<Integer> convertTrendData(String trendData) {
+        List<Integer> trendList = new java.util.ArrayList<>();
+        //trendData 不为null，且长度大于0
+        if (StringUtils.hasLength(trendData)) {
+            String[] trendArr = trendData.split(",");
+            //将字符串数组转换为List<Integer>
+            for (String str : trendArr) {
+                trendList.add(Integer.parseInt(str));
+            }
+        }
+        return trendList;
+    }
+
 }

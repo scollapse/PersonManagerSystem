@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import per.stu.pms.common.domain.dos.TaskDO;
 import org.apache.ibatis.annotations.Mapper;
+import per.stu.pms.common.domain.dtos.task.StaticTaskDTO;
 import per.stu.pms.common.domain.dtos.task.TaskDTO;
 import per.stu.pms.common.enums.TaskStatus;
 
@@ -29,4 +30,6 @@ public interface TaskMapper extends BaseMapper<TaskDO> {
     // 注意返回类型改为 TaskVO
     // 后续拓展传递查询条件使用 QueryWrapper 传递参数
     Page<TaskDTO> findTaskList(@Param("page") Page<TaskDTO> page);
+
+    StaticTaskDTO selectTaskStatistics();
 }

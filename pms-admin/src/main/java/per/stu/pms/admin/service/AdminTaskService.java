@@ -14,4 +14,6 @@ public interface AdminTaskService {
     Response searchTaskList(FindTaskReqVO findTaskReqVO);
 
     Response updateTask(UpdateTaskRequestVO addTaskRequestVO);
+
+    Response staticTask();
 }

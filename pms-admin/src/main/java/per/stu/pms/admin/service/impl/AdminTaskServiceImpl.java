@@ -16,6 +16,7 @@ import per.stu.pms.admin.service.AdminTagService;
 import per.stu.pms.admin.service.AdminTaskService;
 import per.stu.pms.admin.service.AdminTaskTagService;
 import per.stu.pms.common.domain.dos.TaskDO;
+import per.stu.pms.common.domain.dtos.task.StaticTaskDTO;
 import per.stu.pms.common.domain.dtos.task.TaskDTO;
 import per.stu.pms.common.domain.mapper.TaskMapper;
 import per.stu.pms.common.enums.ResponseCodeEnum;
@@ -177,5 +178,13 @@ public class AdminTaskServiceImpl extends ServiceImpl<TaskMapper, TaskDO> implem
 
         log.info("任务更新成功：ID={}", updateReqVO.getTaskId());
         return Response.success();
+    }
+
+
+    @Override
+    public Response staticTask() {
+        StaticTaskDTO staticTaskDTO = taskMapper.selectTaskStatistics();
+        StaticTaskVO staticTaskVO = TaskConvert.INSTANCE.convertDTOToStatisticVO(staticTaskDTO);
+        return Response.success(staticTaskVO);
     }
 }
