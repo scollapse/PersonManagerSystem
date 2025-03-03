@@ -18,6 +18,7 @@ import per.stu.pms.admin.service.AdminTaskTagService;
 import per.stu.pms.common.domain.dos.TaskDO;
 import per.stu.pms.common.domain.dtos.task.StaticTaskDTO;
 import per.stu.pms.common.domain.dtos.task.TaskDTO;
+import per.stu.pms.common.domain.dtos.task.TaskQuery;
 import per.stu.pms.common.domain.mapper.TaskMapper;
 import per.stu.pms.common.enums.ResponseCodeEnum;
 import per.stu.pms.common.enums.TaskStatus;
@@ -104,9 +105,11 @@ public class AdminTaskServiceImpl extends ServiceImpl<TaskMapper, TaskDO> implem
 
     @Override
     public PageResponse findTaskList(FindTaskPageListReqVO findTaskPageListReqVO) {
+        // FindTaskPageListReqVO ---> TaskQuery
+        TaskQuery taskQuery = TaskConvert.INSTANCE.convertVOToQuery(findTaskPageListReqVO);
         // 获取分页参数
-        Page<TaskDTO> page = new Page<>(findTaskPageListReqVO.getCurrent(), findTaskPageListReqVO.getSize());
-        Page<TaskDTO> taskDOPage = taskMapper.findTaskList(page);
+        Page<TaskQuery> page = new Page<>(taskQuery.getCurrent(), taskQuery.getSize());
+        Page<TaskDTO> taskDOPage = taskMapper.findTaskList(page,taskQuery);
         List<TaskDTO> records = taskDOPage.getRecords();
         //DO转VO
         List<FindTaskPageListResVO> vos = TaskConvert.INSTANCE.convertDTOToVOList(records);

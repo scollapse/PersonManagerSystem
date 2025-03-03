@@ -53,18 +53,31 @@
 
     <select id="findTaskList" resultMap="TaskDTOResultMap">
         SELECT
-            t.*,
-            IFNULL(p.project_name, '无') AS project_name,
-            tt.id AS tag_id,
-            tt.name AS tag_name
+        t.*,
+        IFNULL(p.project_name, '无') AS project_name,
+        tt.id AS tag_id,
+        tt.name AS tag_name
         FROM ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK} t
-                 LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_PROJECT} p
-                           ON t.project_id = p.project_id
-                 LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK_TAG} ttag
-                           ON t.task_id = ttag.task_id AND ttag.is_deleted = FALSE
-                 LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TAG} tt
-                           ON ttag.tag_id = tt.id AND tt.is_deleted = FALSE
+        LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_PROJECT} p
+        ON t.project_id = p.project_id
+        LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK_TAG} ttag
+        ON t.task_id = ttag.task_id AND ttag.is_deleted = FALSE
+        LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TAG} tt
+        ON ttag.tag_id = tt.id AND tt.is_deleted = FALSE
         WHERE t.is_deleted = FALSE
+        <if test="query.status != null and query.status != ''">
+            AND t.status IN
+            <foreach collection="query.status.split(',')" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        <if test="query.startDate != null">
+            AND t.create_time &gt;= #{query.startDate}
+        </if>
+        <if test="query.endDate != null">
+            AND t.create_time &lt;= #{query.endDate}
+        </if>
+        ORDER BY t.create_time DESC
     </select>
 
     <select id="selectTaskStatistics"  resultType="per.stu.pms.common.domain.dtos.task.StaticTaskDTO">
