@@ -19,4 +19,64 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <resultMap id="ProjectDTOResultMap" type="per.stu.pms.common.domain.dtos.project.ProjectDTO">
+        <id column="project_id" property="projectId" jdbcType="VARCHAR"/>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
+        <result column="owner_id" property="ownerId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="priority" property="priority" jdbcType="INTEGER"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="completion_time" property="completionTime" jdbcType="TIMESTAMP"/>
+        <result column="version" property="version" jdbcType="INTEGER"/>
+        <result column="is_deleted" property="isDeleted" jdbcType="BOOLEAN"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="completed_task_count" property="completedTaskCount" jdbcType="INTEGER"/>
+        <result column="all_task_count" property="allTaskCount" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="findProjectList" resultMap="ProjectDTOResultMap">
+        SELECT
+        p.project_id,
+        p.project_name,
+        p.owner_id,
+        p.status,
+        p.priority,
+        p.description,
+        p.start_time,
+        p.end_time,
+        p.completion_time,
+        p.version,
+        p.is_deleted,
+        p.create_time,
+        p.update_time,
+        COUNT(
+        CASE
+        WHEN t.status = 'completed' AND t.is_deleted = FALSE THEN 1
+        ELSE NULL
+        END
+        ) AS completed_task_count,
+        COUNT(
+        CASE
+        WHEN t.is_deleted = FALSE THEN 1
+        ELSE NULL
+        END
+        ) AS all_task_count
+        FROM ${@per.stu.pms.common.constants.TableConstants@TABLE_PROJECT} p
+        LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK} t ON p.project_id = t.project_id
+        WHERE p.is_deleted = FALSE
+        <if test="query.status != null and query.status != ''">
+            AND p.status IN
+            <foreach collection="query.status.split(',')" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        GROUP BY p.project_id, p.project_name, p.owner_id, p.status, p.priority, p.description,
+        p.start_time, p.end_time, p.completion_time, p.version, p.is_deleted,
+        p.create_time, p.update_time
+        ORDER BY p.create_time DESC
+    </select>
+
 </mapper>

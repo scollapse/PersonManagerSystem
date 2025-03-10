@@ -10,6 +10,8 @@ import per.stu.pms.admin.convert.ProjectConvert;
 import per.stu.pms.admin.model.vo.project.*;
 import per.stu.pms.admin.service.AdminProjectService;
 import per.stu.pms.common.domain.dos.ProjectDO;
+import per.stu.pms.common.domain.dtos.project.ProjectDTO;
+import per.stu.pms.common.domain.dtos.project.ProjectQuery;
 import per.stu.pms.common.domain.mapper.ProjectMapper;
 import per.stu.pms.common.enums.ProjectStatus;
 import per.stu.pms.common.enums.ResponseCodeEnum;
@@ -50,17 +52,12 @@ public class AdminProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectD
 
     @Override
     public PageResponse findProjectList(FindProjectPageListReqVO reqVO) {
+        ProjectQuery projectQuery = ProjectConvert.INSTANCE.convertVOToQuery(reqVO);
         // 构建分页查询
-        Page<ProjectDO> page = new Page<>(reqVO.getCurrent(), reqVO.getSize());
-        QueryWrapper<ProjectDO> queryWrapper = new QueryWrapper<>();
-        // 按状态查询
-        if (Objects.nonNull(reqVO.getStatus())) {
-            queryWrapper.eq("status", reqVO.getStatus());
-        }
-        // 按名称模糊查询
-        Page<ProjectDO> projectPage = projectMapper.findProjectList(page, queryWrapper);
+        Page<ProjectQuery> page = new Page<>(reqVO.getCurrent(), reqVO.getSize());
+        Page<ProjectDTO> projectPage = projectMapper.findProjectList(page, projectQuery);
         // 转换结果
-        List<FindProjectPageListResVO> vos = ProjectConvert.INSTANCE.convertDOToVOList(projectPage.getRecords());
+        List<FindProjectPageListResVO> vos = ProjectConvert.INSTANCE.convertDTOToVOList(projectPage.getRecords());
         return PageResponse.success(projectPage, vos);
     }
 

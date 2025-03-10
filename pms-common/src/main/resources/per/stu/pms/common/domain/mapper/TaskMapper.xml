@@ -39,6 +39,8 @@
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="projectName" column="project_name"/>
+        <result property="allTaskCount" column="alltaskcount"/>
+        <result property="completedTaskCount" column="completedtaskcount"/>
 
         <!-- 新增标签集合映射 -->
         <collection property="tags" ofType="per.stu.pms.common.domain.dos.TagDO">

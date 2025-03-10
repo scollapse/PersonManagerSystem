@@ -35,4 +35,8 @@ public class FindProjectPageListResVO {
     private Boolean isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    // 全部任务数
+    private Integer allTaskCount;
+    // 已完成任务数
+    private Integer completedTaskCount;
 }

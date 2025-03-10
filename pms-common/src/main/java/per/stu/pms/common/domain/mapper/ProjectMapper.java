@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import per.stu.pms.common.domain.dos.ProjectDO;
+import per.stu.pms.common.domain.dtos.project.ProjectDTO;
+import per.stu.pms.common.domain.dtos.project.ProjectQuery;
 import per.stu.pms.common.enums.ProjectStatus;
 
 /**
@@ -25,7 +28,5 @@ public interface ProjectMapper extends BaseMapper<ProjectDO> {
        return selectOne(queryWrapper);
    }
 
-   default Page<ProjectDO> findProjectList(Page<ProjectDO> page, QueryWrapper<ProjectDO> queryWrapper){
-       return selectPage(page, queryWrapper);
-   }
+   Page<ProjectDTO> findProjectList(@Param("page")Page<ProjectQuery> page, @Param("query")ProjectQuery query);
 }

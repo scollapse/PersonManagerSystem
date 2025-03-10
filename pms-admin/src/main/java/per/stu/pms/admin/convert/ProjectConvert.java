@@ -6,9 +6,12 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 import per.stu.pms.admin.model.vo.project.AddProjectRequestVO;
+import per.stu.pms.admin.model.vo.project.FindProjectPageListReqVO;
 import per.stu.pms.admin.model.vo.project.FindProjectPageListResVO;
 import per.stu.pms.admin.model.vo.project.UpdateProjectRequestVO;
 import per.stu.pms.common.domain.dos.ProjectDO;
+import per.stu.pms.common.domain.dtos.project.ProjectDTO;
+import per.stu.pms.common.domain.dtos.project.ProjectQuery;
 import per.stu.pms.common.enums.ProjectStatus;
 
 import java.time.LocalDateTime;
@@ -39,10 +42,10 @@ public interface ProjectConvert {
     @Mapping(target = "completionTime", source = "completionTime", qualifiedByName = "dateToLocalDateTime")
     @Mapping(target = "createTime", source = "createTime", qualifiedByName = "dateToLocalDateTime")
     @Mapping(target = "updateTime", source = "updateTime", qualifiedByName = "dateToLocalDateTime")
-    FindProjectPageListResVO convertDOToVO(ProjectDO projectDO);
+    FindProjectPageListResVO convertDTOToVO(ProjectDTO projectDTO);
 
     // 列表转换（MapStruct 自动实现）
-    List<FindProjectPageListResVO> convertDOToVOList(List<ProjectDO> projectDOList);
+    List<FindProjectPageListResVO> convertDTOToVOList(List<ProjectDTO> projectDTOList);
 
 
     // 新增：更新时的 VO -> DO 转换方法
@@ -56,6 +59,14 @@ public interface ProjectConvert {
     @Mapping(target = "description", source = "description")
     @Mapping(target = "projectName", source = "projectName")
     void updateVOToDO(UpdateProjectRequestVO source, @MappingTarget ProjectDO target); // 关键注解 @MappingTarget
+
+
+    /**
+     * VO -> Query
+     * @param reqVO
+     * @return
+     */
+    ProjectQuery convertVOToQuery(FindProjectPageListReqVO reqVO);
 
 
     // ------------------------- 以下为转换方法 -------------------------
@@ -88,4 +99,5 @@ public interface ProjectConvert {
         if (date == null) return null;
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
+
 }
