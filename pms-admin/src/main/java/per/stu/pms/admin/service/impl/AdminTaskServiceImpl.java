@@ -174,7 +174,7 @@ public class AdminTaskServiceImpl extends ServiceImpl<TaskMapper, TaskDO> implem
 
         // 7. 处理任务-标签关联
         List<UpdateTagReqVO> tags = updateReqVO.getTags();
-        if (tags != null) { // 如果传入了标签信息，则更新任务-标签关联
+        if (!CollectionUtils.isEmpty(tags)) { // 如果传入了标签信息，则更新任务-标签关联
             List<Long> tagIds = processTagsAndReturnIds(tags); // 处理标签并返回标签ID列表
             taskTagService.saveTaskTag(updateReqVO.getTaskId(), tagIds); // 更新任务-标签关联
         }

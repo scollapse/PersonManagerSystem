@@ -79,7 +79,16 @@
         <if test="query.endDate != null">
             AND t.create_time &lt;= #{query.endDate}
         </if>
-        ORDER BY t.create_time DESC
+        ORDER BY
+        CASE
+        WHEN t.status = 'in_progress' THEN 1
+        WHEN t.status = 'wait' THEN 2
+        WHEN t.status = 'todo' THEN 3
+        WHEN t.status = 'completed' THEN 4
+        WHEN t.status = 'deprecated' THEN 5
+        ELSE 6
+        END,
+        t.create_time DESC
     </select>
 
     <select id="selectTaskStatistics"  resultType="per.stu.pms.common.domain.dtos.task.StaticTaskDTO">

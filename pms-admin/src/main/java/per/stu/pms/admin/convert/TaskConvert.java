@@ -31,6 +31,7 @@ public interface TaskConvert {
     @Mapping(target = "endTime", source = "endTime", qualifiedByName = "localDateTimeToDate")     // 使用 localDateTimeToDate
     @Mapping(target = "completionTime", ignore = true)
     @Mapping(target = "version", constant = "0")
+    @Mapping(target = "priority", source = "priority", qualifiedByName = "mapPriority")
     @Mapping(target = "isDeleted", constant = "false")
     @Mapping(target = "createTime", expression = "java(new java.util.Date())")
     @Mapping(target = "updateTime", expression = "java(new java.util.Date())")
@@ -43,7 +44,7 @@ public interface TaskConvert {
      */
     @Mapping(target = "taskId", ignore = true)
     @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
-    @Mapping(target = "priority", source = "priority", qualifiedByName = "mapPriority")
+    @Mapping(target = "priority", source = "priority")
     @Mapping(target = "startTime", source = "startTime", qualifiedByName = "localDateTimeToDate") // 使用 localDateTimeToDate
     @Mapping(target = "endTime", source = "endTime", qualifiedByName = "localDateTimeToDate")     // 使用 localDateTimeToDate
     @Mapping(target = "completionTime", ignore = true)
