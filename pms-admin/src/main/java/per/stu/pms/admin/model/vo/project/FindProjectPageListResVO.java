@@ -14,6 +14,7 @@ import per.stu.pms.common.enums.ProjectStatus;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -39,4 +40,6 @@ public class FindProjectPageListResVO {
     private Integer allTaskCount;
     // 已完成任务数
     private Integer completedTaskCount;
+    // 近七日任务数据
+    private List<Integer> weekData;
 }

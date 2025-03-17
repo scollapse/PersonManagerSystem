@@ -73,6 +73,9 @@
                 #{status}
             </foreach>
         </if>
+        <if test="query.projectId != null and query.projectId != ''">
+            AND t.project_id = #{query.projectId}
+        </if>
         <if test="query.startDate != null and query.endDate != null">
             AND (
             -- 任务开始时间在查询范围内
@@ -97,7 +100,7 @@
         WHEN t.status = 'deprecated' THEN 5
         ELSE 6
         END,
-        t.create_time DESC
+        t.priority, t.completion_time, t.start_time, t.end_time DESC
     </select>
 
     <select id="selectTaskStatistics"  resultType="per.stu.pms.common.domain.dtos.task.StaticTaskDTO">

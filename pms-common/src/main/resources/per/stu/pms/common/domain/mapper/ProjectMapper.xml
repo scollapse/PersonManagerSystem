@@ -35,6 +35,8 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <result column="completed_task_count" property="completedTaskCount" jdbcType="INTEGER"/>
         <result column="all_task_count" property="allTaskCount" jdbcType="INTEGER"/>
+        <!-- 其他字段映射... -->
+        <result column="weekdata" property="weekData" typeHandler="per.stu.pms.common.handler.JsonArrayTypeHandler"/>
     </resultMap>
 
     <select id="findProjectList" resultMap="ProjectDTOResultMap">
@@ -63,7 +65,24 @@
         WHEN t.is_deleted = FALSE THEN 1
         ELSE NULL
         END
-        ) AS all_task_count
+        ) AS all_task_count,
+        CONCAT(
+        '[',
+        COALESCE(SUM(CASE WHEN DATE(t.create_time) = CURDATE() - INTERVAL 6 DAY AND t.is_deleted = FALSE THEN 1 ELSE 0 END), 0),
+        ',',
+        COALESCE(SUM(CASE WHEN DATE(t.create_time) = CURDATE() - INTERVAL 5 DAY AND t.is_deleted = FALSE THEN 1 ELSE 0 END), 0),
+        ',',
+        COALESCE(SUM(CASE WHEN DATE(t.create_time) = CURDATE() - INTERVAL 4 DAY AND t.is_deleted = FALSE THEN 1 ELSE 0 END), 0),
+        ',',
+        COALESCE(SUM(CASE WHEN DATE(t.create_time) = CURDATE() - INTERVAL 3 DAY AND t.is_deleted = FALSE THEN 1 ELSE 0 END), 0),
+        ',',
+        COALESCE(SUM(CASE WHEN DATE(t.create_time) = CURDATE() - INTERVAL 2 DAY AND t.is_deleted = FALSE THEN 1 ELSE 0 END), 0),
+        ',',
+        COALESCE(SUM(CASE WHEN DATE(t.create_time) = CURDATE() - INTERVAL 1 DAY AND t.is_deleted = FALSE THEN 1 ELSE 0 END), 0),
+        ',',
+        COALESCE(SUM(CASE WHEN DATE(t.create_time) = CURDATE() AND t.is_deleted = FALSE THEN 1 ELSE 0 END), 0),
+        ']'
+        ) AS weekData
         FROM ${@per.stu.pms.common.constants.TableConstants@TABLE_PROJECT} p
         LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK} t ON p.project_id = t.project_id
         WHERE p.is_deleted = FALSE
