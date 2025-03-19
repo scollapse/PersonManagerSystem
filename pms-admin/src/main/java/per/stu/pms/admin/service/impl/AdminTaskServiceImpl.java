@@ -58,6 +58,10 @@ public class AdminTaskServiceImpl extends ServiceImpl<TaskMapper, TaskDO> implem
 
         // 2. 插入任务
         TaskDO insertTaskDO = TaskConvert.INSTANCE.convertVOToDO(addTaskRequestVO);
+        // 项目ID为-1时，设置为null
+        if (insertTaskDO.getProjectId().equals("-1")) {
+            insertTaskDO.setProjectId(null);
+        }
         insertTaskDO.setStatus(TaskStatus.todo);
         int insert = taskMapper.insert(insertTaskDO);
         if (insert == 0) {

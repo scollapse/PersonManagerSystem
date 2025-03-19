@@ -92,6 +92,9 @@
                 #{status}
             </foreach>
         </if>
+        <if test="query.projectName != null and query.projectName != ''">
+            AND p.project_name  LIKE CONCAT('%', #{query.projectName}, '%')
+        </if>
         GROUP BY p.project_id, p.project_name, p.owner_id, p.status, p.priority, p.description,
         p.start_time, p.end_time, p.completion_time, p.version, p.is_deleted,
         p.create_time, p.update_time
