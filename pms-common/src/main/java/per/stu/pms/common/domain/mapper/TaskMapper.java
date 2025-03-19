@@ -11,6 +11,8 @@ import per.stu.pms.common.domain.dtos.task.TaskDTO;
 import per.stu.pms.common.domain.dtos.task.TaskQuery;
 import per.stu.pms.common.enums.TaskStatus;
 
+import java.util.List;
+
 /**
  * @description: 任务表 Mapper 接口
  * @author: syl
@@ -28,9 +30,12 @@ public interface TaskMapper extends BaseMapper<TaskDO> {
         return selectOne(queryWrapper);
     }
 
-    // 注意返回类型改为 TaskVO
-    // 后续拓展传递查询条件使用 QueryWrapper 传递参数
-    Page<TaskDTO> findTaskList(@Param("page") Page<TaskQuery> page, @Param("query") TaskQuery query);
-
     StaticTaskDTO selectTaskStatistics();
+
+    // 分页查询ID列表
+    Page<String> selectTaskIds(@Param("page") Page<TaskQuery> page, @Param("query") TaskQuery query);
+
+    // 根据ID列表查询详情
+    List<TaskDTO> selectTasksByIds(@Param("taskIds") List<String> taskIds);
+
 }

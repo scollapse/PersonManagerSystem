@@ -113,11 +113,19 @@ public class AdminTaskServiceImpl extends ServiceImpl<TaskMapper, TaskDO> implem
         TaskQuery taskQuery = TaskConvert.INSTANCE.convertVOToQuery(findTaskPageListReqVO);
         // 获取分页参数
         Page<TaskQuery> page = new Page<>(taskQuery.getCurrent(), taskQuery.getSize());
-        Page<TaskDTO> taskDOPage = taskMapper.findTaskList(page,taskQuery);
-        List<TaskDTO> records = taskDOPage.getRecords();
+        //分两步查询：
+        //1.分页查询任务 ID：先按条件分页查询任务 ID，确保分页数量准确。
+        //2.根据 ID 查询完整数据：通过任务 ID 列表查询任务及其标签，避免标签 JOIN 影响分页。
+        Page<String> idPage = taskMapper.selectTaskIds(page, taskQuery);
+        if (CollectionUtils.isEmpty(idPage.getRecords())) {
+            return PageResponse.success(page, Collections.emptyList());
+        }
+
+        // 2. 根据 ID 查询完整数据
+        List<TaskDTO> records = taskMapper.selectTasksByIds(idPage.getRecords());
         //DO转VO
         List<FindTaskPageListResVO> vos = TaskConvert.INSTANCE.convertDTOToVOList(records);
-        return PageResponse.success(taskDOPage,vos);
+        return PageResponse.success(idPage,vos);
     }
 
     @Override

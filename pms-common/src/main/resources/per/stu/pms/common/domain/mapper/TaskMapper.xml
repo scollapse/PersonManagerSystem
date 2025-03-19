@@ -52,60 +52,78 @@
         </collection>
     </resultMap>
 
+    <select id="selectTaskIds" resultType="java.lang.String">
+        SELECT  t.task_id
+        FROM ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK} t
+        WHERE t.is_deleted = FALSE
+        <if test="query != null">
+            <include refid="queryConditions"/>
+        </if>
+        ORDER BY
+        <include refid="sortingLogic"/>
+        <!-- 移除LIMIT分页参数 -->
+    </select>
 
-    <select id="findTaskList" resultMap="TaskDTOResultMap">
+    <select id="selectTasksByIds" resultMap="TaskDTOResultMap">
         SELECT
         t.*,
         IFNULL(p.project_name, '无') AS project_name,
         tt.id AS tag_id,
         tt.name AS tag_name
         FROM ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK} t
-        LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_PROJECT} p
-        ON t.project_id = p.project_id
+        LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_PROJECT} p ON t.project_id = p.project_id
         LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TASK_TAG} ttag
         ON t.task_id = ttag.task_id AND ttag.is_deleted = FALSE
         LEFT JOIN ${@per.stu.pms.common.constants.TableConstants@TABLE_TAG} tt
         ON ttag.tag_id = tt.id AND tt.is_deleted = FALSE
-        WHERE t.is_deleted = FALSE
-        <if test="query != null">
+        WHERE t.task_id IN
+        <foreach item="id" collection="taskIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
-            <if test="query.status != null and query.status.trim() != ''">
-                AND t.status IN
-                <foreach collection="query.status.split(',')" item="status" open="(" separator="," close=")">
-                    #{status}
-                </foreach>
-            </if>
 
-            <if test="query.taskName != null and query.taskName.trim() != ''">
-                AND t.task_name  LIKE CONCAT('%', #{query.taskName}, '%')
+    <!-- 公共查询条件 -->
+    <sql id="queryConditions">
+        <if test="query.status != null and query.status.trim() != ''">
+            AND t.status IN
+            <foreach collection="query.status.split(',')" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+
+        <if test="query.taskName != null and query.taskName.trim() != ''">
+            AND t.task_name  LIKE CONCAT('%', #{query.taskName}, '%')
+        </if>
+        <if test="query.projectId != null and query.projectId != ''">
+            <!-- 查询未绑定项目的任务 -->
+            <if test="query.projectId == '-1'">
+                AND t.project_id IS NULL
             </if>
-            <if test="query.projectId != null and query.projectId != ''">
-                <!-- 查询未绑定项目的任务 -->
-                <if test="query.projectId == '-1'">
-                    AND t.project_id IS NULL
-                </if>
-                <!-- 查询绑定项目的任务 -->
-                <if test="query.projectId != '-1'">
+            <!-- 查询绑定项目的任务 -->
+            <if test="query.projectId != '-1'">
                 AND t.project_id = #{query.projectId}
-                </if>
-            </if>
-            <if test="query.startDate != null and query.startDate != '' and query.endDate != null and query.endDate != ''">
-                AND (
-                -- 任务开始时间在查询范围内
-                (t.start_time &gt;= #{query.startDate} AND t.start_time &lt;= #{query.endDate})
-                OR
-                -- 任务截止时间在查询范围内
-                (t.end_time &gt;= #{query.startDate} AND t.end_time &lt;= #{query.endDate})
-                OR
-                -- 任务时间范围跨越查询范围
-                (t.start_time &lt; #{query.startDate} AND t.end_time &gt; #{query.endDate})
-                OR
-                -- 任务完成时间在查询范围内
-                (t.completion_time &gt;= #{query.startDate} AND t.completion_time &lt;= #{query.endDate})
-                )
             </if>
         </if>
-        ORDER BY
+        <if test="query.startDate != null and query.startDate != '' and query.endDate != null and query.endDate != ''">
+            AND (
+            -- 任务开始时间在查询范围内
+            (t.start_time &gt;= #{query.startDate} AND t.start_time &lt;= #{query.endDate})
+            OR
+            -- 任务截止时间在查询范围内
+            (t.end_time &gt;= #{query.startDate} AND t.end_time &lt;= #{query.endDate})
+            OR
+            -- 任务时间范围跨越查询范围
+            (t.start_time &lt; #{query.startDate} AND t.end_time &gt; #{query.endDate})
+            OR
+            -- 任务完成时间在查询范围内
+            (t.completion_time &gt;= #{query.startDate} AND t.completion_time &lt;= #{query.endDate})
+            )
+        </if>
+    </sql>
+
+    <!-- 公共排序逻辑 -->
+    <sql id="sortingLogic">
         CASE
         WHEN t.status = 'in_progress' THEN 1
         WHEN t.status = 'wait' THEN 2
@@ -114,8 +132,9 @@
         WHEN t.status = 'deprecated' THEN 5
         ELSE 6
         END,
-        t.priority, t.completion_time DESC, t.start_time DESC
-    </select>
+    t.priority, t.completion_time DESC, t.start_time DESC
+    </sql>
+
 
     <select id="selectTaskStatistics" resultType="per.stu.pms.common.domain.dtos.task.StaticTaskDTO">
         SELECT COUNT(*)                                                                   AS total,
